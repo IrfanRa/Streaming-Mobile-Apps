@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         width: 371,
         height: 40,
         color: 'white',
-        font: 'bold',
+        fontWeight: 'bold',
         fontSize: 26,
         marginLeft: 90,
     }
