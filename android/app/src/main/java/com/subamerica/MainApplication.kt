@@ -1,4 +1,4 @@
-package com.subamerica
+package com.subamerica.app
 
 import android.app.Application
 import com.facebook.react.PackageList

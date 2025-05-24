@@ -1,6 +1,8 @@
-/**
- * @format
- */
+// index.js
+import 'react-native-gesture-handler';    // MUST be at top
+import { enableScreens } from 'react-native-screens';
+
+enableScreens(); 
 
 import {AppRegistry} from 'react-native';
 import App from './App';

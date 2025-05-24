@@ -1,4 +1,4 @@
-package com.subamerica
+package com.subamerica.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
