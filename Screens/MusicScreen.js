@@ -10,7 +10,7 @@ const MusicScreen = ({navigation}) => {
   const { data, loading, error } = useFetchData('https://otttelemaerica.com/feed/SubAmerica.json');
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-  if (error) return <Text>Error loading data</Text>;
+  if (error) return <Text>{error.message}</Text>;
 
   return (
     <View style={styles.container}>
