@@ -21,6 +21,7 @@ const Player = ({ route }) => {
   const [showControls, setShowControls] = useState(true);
   const controlTimeoutRef = useRef(null);
   const [isLandscape, setIsLandscape] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
   const [videoDimensions, setVideoDimensions] = useState({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
@@ -61,18 +62,22 @@ const Player = ({ route }) => {
     });
   };
 
+  const handleProgress = (data) => {
+    setCurrentTime(data.currentTime);
+  };
+
   const handlePausePlay = () => {
     setPaused(!paused);
     setShowControls(true);
   };
 
   const handleForward = () => {
-    videoRef.current.seek(videoRef.current.currentTime + 10);
+    videoRef.current.seek(currentTime + 10);
     setShowControls(true);
   };
 
   const handleBack = () => {
-    videoRef.current.seek(videoRef.current.currentTime - 10);
+    videoRef.current.seek(Math.max(currentTime - 10, 0));
     setShowControls(true);
   };
 
@@ -104,6 +109,7 @@ const Player = ({ route }) => {
             }}
             resizeMode="contain"
             paused={paused}
+            onProgress={handleProgress}
           />
 
           {showControls && (
