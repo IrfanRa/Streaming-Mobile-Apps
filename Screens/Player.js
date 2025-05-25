@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Dimensions,
+  Text,
 } from 'react-native';
 import Video from 'react-native-video';
 import Orientation from 'react-native-orientation-locker';
@@ -15,6 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Player = ({ route }) => {
   const { videoUrl } = route.params;
+  const isHls = /\.m3u8(\?.*)?$/.test(videoUrl);
   const videoRef = useRef(null);
   const navigation = useNavigation();
   const [paused, setPaused] = useState(false);
@@ -26,6 +28,7 @@ const Player = ({ route }) => {
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     Orientation.lockToLandscape();
@@ -67,16 +70,25 @@ const Player = ({ route }) => {
   };
 
   const handlePausePlay = () => {
+    if (isHls) {
+      return;
+    }
     setPaused(!paused);
     setShowControls(true);
   };
 
   const handleForward = () => {
+    if (isHls) {
+      return;
+    }
     videoRef.current.seek(currentTime + 10);
     setShowControls(true);
   };
 
   const handleBack = () => {
+    if (isHls) {
+      return;
+    }
     videoRef.current.seek(Math.max(currentTime - 10, 0));
     setShowControls(true);
   };
@@ -96,6 +108,10 @@ const Player = ({ route }) => {
     setShowControls(true);
   };
 
+  const handleError = () => {
+    setError('Error loading video');
+  };
+
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={handleScreenPress}>
@@ -110,7 +126,14 @@ const Player = ({ route }) => {
             resizeMode="contain"
             paused={paused}
             onProgress={handleProgress}
+            onError={handleError}
           />
+
+          {error && (
+            <View style={styles.errorContainer} pointerEvents="none">
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
 
           {showControls && (
             <>
@@ -120,21 +143,23 @@ const Player = ({ route }) => {
                 <Icon name="arrow-back" size={30} color="white" />
               </TouchableOpacity>
 
-              <View style={styles.controls}>
-                <TouchableOpacity onPress={handleBack} style={styles.controlButton}>
-                  <Icon name="replay-10" size={40} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handlePausePlay} style={styles.controlButton}>
-                  {paused ? (
-                    <Icon name="play-arrow" size={40} color="white" />
-                  ) : (
-                    <Icon name="pause" size={40} color="white" />
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleForward} style={styles.controlButton}>
-                  <Icon name="forward-10" size={40} color="white" />
-                </TouchableOpacity>
-              </View>
+              {!isHls && (
+                <View style={styles.controls}>
+                  <TouchableOpacity onPress={handleBack} style={styles.controlButton}>
+                    <Icon name="replay-10" size={40} color="white" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handlePausePlay} style={styles.controlButton}>
+                    {paused ? (
+                      <Icon name="play-arrow" size={40} color="white" />
+                    ) : (
+                      <Icon name="pause" size={40} color="white" />
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleForward} style={styles.controlButton}>
+                    <Icon name="forward-10" size={40} color="white" />
+                  </TouchableOpacity>
+                </View>
+              )}
 
               <TouchableOpacity
                 style={styles.orientationButton}
@@ -179,6 +204,20 @@ const styles = StyleSheet.create({
     top: 40,
     right: 20,
     zIndex: 1,
+  },
+  errorContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'white',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 4,
   },
 });
 
